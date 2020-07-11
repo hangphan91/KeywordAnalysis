@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <OutputType>Library</OutputType>
+    <LangVersion>default</LangVersion>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    <Title>ChartJs.Blazor</Title>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <Company>Marius Muntean</Company>
+    <Authors>Marius Muntean</Authors>
+    <Description>ChartJs charts for Blazor.
+      Compatible with client-side and server-side Blazor applications.
+    </Description>
+    <RepositoryUrl>https://github.com/mariusmuntean/ChartJs.Blazor</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/mariusmuntean/ChartJs.Blazor</PackageProjectUrl>
+    <PackageTags>ChartJS Blazor ASP.Net Core wasm</PackageTags>
+    <PackageSummary></PackageSummary>
+    <PackageReleaseNotes>First preview of the upcoming 2.0 release.
+Changes:
+* Improved JavaScript interop layer and API.
+* Datasets were reworked.
+* Unified all charts into one Blazor component.
+* Bugfixes and performance improvements.
+
+Attention: this release includes breaking changes and it represents a work in progress.</PackageReleaseNotes>
+    <AssemblyName>ChartJs.Blazor</AssemblyName>
+    <RootNamespace>ChartJs.Blazor</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>2.0.0</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageVersion>2.0.0-preview1</PackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>.\ChartJs.Blazor.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Content Remove="tsbuild/debug/tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Content Remove="tsbuild/release/tsconfig.json" />
+    <Content Include="wwwroot/ts/**/*">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.5" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.9.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ChartJS\BarChart\Axes\ExtendedCartesianAxes.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ExtendedCartesianAxes.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ChartJS\BarChart\Axes\ExtendedCartesianAxes.cs">
+      <DependentUpon>ExtendedCartesianAxes.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

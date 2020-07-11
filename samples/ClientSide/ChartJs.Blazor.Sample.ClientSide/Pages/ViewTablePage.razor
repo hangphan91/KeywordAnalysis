@@ -1,0 +1,53 @@
+﻿@page "/ViewTable"
+@page "/ViewTable/{JobTitle}"
+@inject HttpClient Http
+@using System.Net.Http.Json;
+@using ChartJs.Blazor.Sample.ClientSide.ClientServices
+
+<h1>Keywords Table for @JobTitle</h1>
+
+@if (groups == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>KeyWord</th>
+                <th>Include</th>
+                <th>Count</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var word in groups)
+            {
+                <tr>
+                    <td></td>
+                    <td>@word.WordGroup</td>
+                    <td>@word.IncludedInGroup.Replace("|", ", ") </td>
+                    <td>@word.Count</td>
+                    <td>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public string JobTitle { get; set; }
+    private ResultsTable[] groups;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string path = "JsonFolder/results.json";
+        groups = await Http.GetFromJsonAsync<ResultsTable[]>(path);
+    }
+}
+
+

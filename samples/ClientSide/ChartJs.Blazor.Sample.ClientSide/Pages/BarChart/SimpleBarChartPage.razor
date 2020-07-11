@@ -1,0 +1,135 @@
+﻿@page "/SimpleBarChart"
+@page "/SimpleBarChart/{JobTitle}"
+@inject HttpClient Http
+@using System.Net.Http.Json;
+@using ChartJs.Blazor.Sample.Shared.Services
+@using ChartJs.Blazor.ChartJS.BarChart
+@using ChartJs.Blazor.ChartJS.BarChart.Axes
+@using ChartJs.Blazor.ChartJS.Common.Axes
+@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
+@using ChartJs.Blazor.ChartJS.Common.Properties
+@using ChartJs.Blazor.Charts
+@using ChartJs.Blazor.Util
+
+<h2 class="text-center">BarChart for Popular Words in @JobTitle's Job Description</h2>
+<br />
+<Chart @ref="_barChart"
+       Config="@_barChartConfig"
+       TConfig="ChartJs.Blazor.ChartJS.BarChart.BarConfig"
+       Width="600"
+       Height="300" />
+
+@code
+{
+    [Parameter]
+    public string JobTitle { get; set; }
+    private BarConfig _barChartConfig;
+    private Chart<BarConfig> _barChart;
+    private BarDataset<double> _barDataSet;
+    public List<ResultsTable> ToDisplay { get; set; } = new List<ResultsTable>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string path = "JsonFolder/results.json";
+        var Results = await Http.GetFromJsonAsync<ResultsTable[]>(path);
+        ToDisplay = Results.ToList();
+        while (ToDisplay != null)
+        {
+            await ShowDataset();
+            break;
+        }
+        await _barChart.Update();
+    }
+    protected override void OnInitialized()
+    {
+        _barChartConfig = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Title = new OptionsTitle
+                {
+                    Display = false,
+                    Text = "BarChart for Popular Words in Software Engineer's Job Description",
+                    FontSize = 20,
+                    FontStyle = ChartJS.Common.Enums.FontStyle.Normal,
+                    FontColor = "black",
+                    Position = ChartJS.Common.Enums.Position.Bottom
+                },
+                Scales = new BarScales
+                {
+                    XAxes = new List<CartesianAxis>
+{
+                        new BarCategoryAxis
+                        {
+                            BarPercentage = 0.5,
+                            BarThickness = BarThickness.Flex
+                        }
+                    },
+                    YAxes = new List<CartesianAxis>
+{
+                        new BarLinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true
+                            }
+                        }
+                    }
+                },
+                Legend = new Legend
+                {
+                    Display = false
+                }
+            }
+        };
+    }
+
+    private async Task AddData()
+    {
+        var nowSecond = DateTime.Now.Second;
+        _barChartConfig.Data.Labels.Add(nowSecond.ToString());
+        _barDataSet.Add(nowSecond);
+
+        await _barChart.Update();
+    }
+
+    private async Task RemoveData()
+    {
+        if (_barChartConfig.Data.Labels.Count > 0)
+        {
+            _barChartConfig.Data.Labels.RemoveAt(_barChartConfig.Data.Labels.Count - 1);
+        }
+
+        if (_barDataSet.Data.Count > 0)
+        {
+            _barDataSet.RemoveAt(_barDataSet.Data.Count - 1);
+        }
+
+        await _barChart.Update();
+    }
+    private async Task ShowDataset()
+    {
+        if (_barChartConfig.Data.Datasets.Count > 0)
+        {
+            _barChartConfig.Data.Datasets.Clear();
+        }
+        var count = ToDisplay.Count();
+        var pieSet = new BarDataset<double>
+        {
+            BorderWidth = 0,
+            Label = "Popular Keywords",
+            HoverBackgroundColor = ColorUtil.RandomColorString(),
+            HoverBorderColor = ColorUtil.RandomColorString(),
+            HoverBorderWidth = 1,
+            BorderColor = "#ffffff",
+        };
+        _barChartConfig.Data.Labels.AddRange(ToDisplay.Select(t => t.WordGroup));
+        // determine the number of data points to add
+        var rand = new Random();
+        pieSet.AddRange(ToDisplay.Select(r => r.Count));
+        pieSet.BackgroundColor = Enumerable.Range(0, count).Select(i => ColorUtil.RandomColorString()).ToArray();
+
+        _barChartConfig.Data.Datasets.Add(pieSet);
+        await _barChart.Update();
+    }
+}

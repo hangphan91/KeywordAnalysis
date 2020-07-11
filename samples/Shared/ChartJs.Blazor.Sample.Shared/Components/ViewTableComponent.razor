@@ -1,0 +1,55 @@
+﻿@inject HttpClient Http
+@using System.Net.Http.Json;
+@using ChartJs.Blazor.Sample.Shared.Services
+@using System.IO
+
+<h1>Keywords Group Count</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (groups == null)
+{
+    <p><em>Loading...</em></p>
+    <p>@pathJson</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>KeyWord</th>
+                <th>Include</th>
+                <th>Count</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var word in groups)
+            {
+                <tr>
+                    <td></td>
+                    <td>@word.WordGroup</td>
+                    <td>@word.IncludedInGroup.Replace("|", ", ") </td>
+                    <td>@word.Count</td>
+                    <td>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ResultsTable[] groups;
+    private string pathJson;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string directory = Directory.GetCurrentDirectory().Replace("Components", "JsonFolder");
+        string path = directory + "sample-data/results.json";
+        pathJson = path;
+        groups = await Http.GetFromJsonAsync<ResultsTable[]>(path);
+    }
+}
+

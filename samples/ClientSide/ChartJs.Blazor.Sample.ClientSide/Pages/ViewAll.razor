@@ -1,0 +1,22 @@
+﻿@page "/All"
+@page "/All/{JobTitle}"
+
+@using ChartJs.Blazor.Sample.ClientSide.Pages.BarChart
+
+<div><SimpleBarChartPage JobTitle=@JobTitle /></div>
+<br />
+<br />
+<div><PolarAreaChartpage JobTitle=@JobTitle /></div>
+<br />
+<br />
+<div><DoughnutChartPage JobTitle=@JobTitle /></div>
+<br />
+<br />
+<br />
+<br />
+<div><ViewTablePage JobTitle=@JobTitle /></div>
+@code{
+    [Parameter]
+    public string JobTitle { get; set; }
+}
+

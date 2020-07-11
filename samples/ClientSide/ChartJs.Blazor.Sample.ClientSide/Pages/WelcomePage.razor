@@ -1,0 +1,48 @@
+﻿@page "/welcome"
+@inject NavigationManager NavManager
+@using ChartJs.Blazor.Sample.Shared.Data
+
+<h1 class="text-center">List of Jobs have keywords analysis </h1>
+<br />
+
+
+@foreach (var jobTitle in Jobtiles)
+{
+    <div class="card text-center" style="width:500px; margin:auto">
+        <div class="card-block ">
+            <h4 class="card-title">
+                <NavLink class="nav-link text-center" href="#"
+                         @onclick="@(e => GotoPage(e, jobTitle))">
+                    @jobTitle
+                    <span class="oi " aria-hidden="true"></span>
+                </NavLink>
+            </h4>
+        </div>
+    </div>
+}
+
+
+@code{
+    public List<string> Jobtiles { get; set; } = new List<string>();
+    public string Goto { get; set; } = "All/";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() =>
+        {
+            var list = Enum.GetValues(typeof(CSJobTitle)).Cast<CSJobTitle>().Select(v => v.ToString()).ToList();
+            foreach (var item in list)
+            {
+                var val = string.Concat(item.Select(x => Char.IsUpper(x) ? " " + x : x.ToString())).TrimStart(' ');
+                Jobtiles.Add(val);
+            }
+        });
+
+    }
+    public void GotoPage(MouseEventArgs e, string jobtitle)
+    {
+        NavManager.NavigateTo(Goto + jobtitle, true);
+
+    }
+}
